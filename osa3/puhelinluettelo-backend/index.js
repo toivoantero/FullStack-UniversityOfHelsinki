@@ -9,7 +9,7 @@ app.use(express.static('dist'))
 //app.use(morgan('tiny'))
 morgan.token('postissa', (req) => { return JSON.stringify(req.body) })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :postissa'))
-
+/*
 let persons = [
     {
         "name": "Arto Hellas",
@@ -32,7 +32,7 @@ let persons = [
         "id": "4"
     }
 ]
-
+*/
 app.get('/api/persons', (request, response) => {
     Person.find({}).then(persons => {
         response.json(persons)
