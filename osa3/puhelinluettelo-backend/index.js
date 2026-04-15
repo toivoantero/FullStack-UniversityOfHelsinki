@@ -10,10 +10,6 @@ app.use(express.static('dist'))
 morgan.token('postissa', (req) => { return JSON.stringify(req.body) })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :postissa'))
 
-
-const url = `mongodb+srv://markus_db_user:${password}@cluster0.25l9h47.mongodb.net/contactApp?appName=Cluster0`
-
-
 let persons = [
     {
         "name": "Arto Hellas",
