@@ -1,7 +1,7 @@
-POST https://fullstack-universityofhelsinki-l39p.onrender.com/api/persons
+PUT http://localhost:3001/api/persons/69df6e780817460c07cbfa76
 Content-Type: application/json
 
 {
-  "name": "Jaakko Kulta",
-  "number": "050 1234567"
+  "name": "Lissu",
+  "number": "001"
 }
