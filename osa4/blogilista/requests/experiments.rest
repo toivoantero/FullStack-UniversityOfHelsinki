@@ -1,8 +1,8 @@
-POST http://localhost:3003/api/blogs
+PUT http://localhost:3003/api/blogs/69e7e8e6d730f710277bd400
 Content-Type: application/json
 
 {
-  "title": "Testi 4",
+  "title": "Testi5",
   "author": "sdfsddf",
   "url": "http://test.com",
   "likes": 1
