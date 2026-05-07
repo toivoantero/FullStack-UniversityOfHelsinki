@@ -2,9 +2,11 @@ const { test, describe, after, beforeEach } = require('node:test')
 const assert = require('node:assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
+const bcrypt = require('bcrypt')
 const app = require('../app')
 const helper = require('./test_helper')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const api = supertest(app)
 
@@ -83,7 +85,7 @@ describe('when a blog is added', () => {
   })
 })
 
-test.only('a blog can be deleted', async () => {
+test('a blog can be deleted', async () => {
   const blogsAtStart = await helper.blogsInDb()
   const blogToDelete = blogsAtStart[0]
 
@@ -99,7 +101,7 @@ test.only('a blog can be deleted', async () => {
   assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
 })
 
-test.only('a specific blog can be viewed', async () => {
+test('a specific blog can be viewed', async () => {
   const updatedBlog = {
     title: "ParasBlogi",
     author: "Jaska",
@@ -108,7 +110,6 @@ test.only('a specific blog can be viewed', async () => {
   }
   const blogsAtStart = await helper.blogsInDb()
   const blogToPut = blogsAtStart[0]
-  console.log("EKA: ", blogToPut)
 
   const resultBlog = await api
     .put(`/api/blogs/${blogToPut.id}`)
@@ -116,10 +117,98 @@ test.only('a specific blog can be viewed', async () => {
     .expect(200)
     .expect('Content-Type', /application\/json/)
 
-  console.log("TOKA: ", resultBlog.body)
-
   assert.deepStrictEqual(resultBlog.body.likes, updatedBlog.likes)
 
+})
+
+describe('when there is initially one user at db', () => {
+  beforeEach(async () => {
+    await User.deleteMany({})
+
+    const passwordHash = await bcrypt.hash('sekret', 10)
+    const user = new User({ username: 'initial', passwordHash })
+
+    await user.save()
+  })
+
+  test.only('creation succeeds with a fresh username', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'abc',
+      name: 'Markus Liimatainen',
+      password: '123',
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await helper.usersInDb()
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length + 1)
+
+    const usernames = usersAtEnd.map(u => u.username)
+    assert(usernames.includes(newUser.username))
+  })
+
+  test.only('creation fails with proper statuscode and message if username already taken', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'initial',
+      name: 'Käyttäväinen',
+      password: '123',
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await helper.usersInDb()
+    assert(result.body.error.includes('expected `username` to be unique'))
+
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+  })
+
+  test.only('creation fails with proper statuscode and message if username length is less than 3 signs', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'ab',
+      name: 'Käyttäväinen',
+      password: '123',
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    assert(result.body.error.includes('is shorter than the minimum allowed length'))
+  })
+
+  test.only('creation fails with proper statuscode and message if password length is less than 3 signs', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'abc',
+      name: 'Käyttäväinen',
+      password: '12',
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(401)
+      .expect('Content-Type', /application\/json/)
+
+    assert(result.body.error.includes('invalid password'))
+  })
 })
 
 after(async () => {

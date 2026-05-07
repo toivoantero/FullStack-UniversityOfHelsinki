@@ -1,9 +1,11 @@
-PUT http://localhost:3003/api/blogs/69e7e8e6d730f710277bd400
+POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImRpaXBhIiwiaWQiOiI2OWZjZGRmYmRjNjdjNmU4ODU2MDRkZWUiLCJpYXQiOjE3NzgxODI4Mjh9.1Qgcv0LZlSipm1_zVGsSlYufbCKYjlt26UIkbysCPt0
 
 {
-  "title": "Testi5",
-  "author": "sdfsddf",
-  "url": "http://test.com",
-  "likes": 1
+  "title": "bod",
+  "author": "hor",
+  "url": "dy",
+  "likes": 33,
+  "user": "69fbc272ef1df2a4870dcd27"
 }
