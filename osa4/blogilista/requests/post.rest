@@ -3,8 +3,8 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImRpaXBhIiwiaWQiOiI2OWZjZGRmYmRjNjdjNmU4ODU2MDRkZWUiLCJpYXQiOjE3NzgxODI4Mjh9.1Qgcv0LZlSipm1_zVGsSlYufbCKYjlt26UIkbysCPt0
 
 {
-  "title": "bod",
-  "author": "hor",
+  "title": "vvimeisin",
+  "author": "lölölölö",
   "url": "dy",
   "likes": 33,
   "user": "69fbc272ef1df2a4870dcd27"

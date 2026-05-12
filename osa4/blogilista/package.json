@@ -5,7 +5,8 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production node index.js",
     "dev": "cross-env NODE_ENV=development node --watch index.js",
-    "test": "cross-env NODE_ENV=test node --test"
+    "test": "cross-env NODE_ENV=test node --test",
+    "lint": "eslint ."
   },
   "author": "Markus Liimatainen",
   "license": "ISC",
@@ -20,6 +21,10 @@
     "mongoose": "^9.5.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "eslint": "^9.39.4",
+    "globals": "^17.6.0",
     "supertest": "^7.2.2"
   }
 }
