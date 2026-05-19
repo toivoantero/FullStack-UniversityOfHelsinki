@@ -40,7 +40,7 @@ const Blog = ({ blog, user, updateBlog, removeBlog }) => {
         <button style={hideWhenVisible} onClick={() => setVisible(true)}>view</button>
         <button style={showWhenVisible} onClick={() => setVisible(false)}>hide</button>
       </div>
-      <div style={showWhenVisible}>
+      <div data-testid="hideShowInfo" style={showWhenVisible}>
         {blog.url}<br />
         likes {blog.likes}<button onClick={addLikes}>like</button><br />
         {blog.user?.name}<br />
