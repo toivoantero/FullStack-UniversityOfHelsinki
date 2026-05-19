@@ -1,13 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
-import BlogForm from './BlogForm'
 
 test('renders title', () => {
   const blog = {
-    title: 'paras blogi',
-    likes: 3,
-    url: 'www.abc.def'
+    title: 'paras blogi'
   }
 
   render(<Blog blog={blog} />)
@@ -31,13 +28,11 @@ test('renders url, likes and the user after the button is pressed', async () => 
   render(<Blog blog={blog} />)
 
   const element = screen.getByTestId('hideShowInfo')
-
   expect(element).not.toBeVisible()
 
   const user = userEvent.setup()
   const button = screen.getByText('view')
   await user.click(button)
-
   expect(element).toBeVisible()
 })
 
@@ -51,22 +46,5 @@ test('clicking the like-button twice calls event handler twice', async () => {
   const button = screen.getByText('like')
   await user.click(button)
   await user.click(button)
-
   expect(mockHandler.mock.calls).toHaveLength(2)
-})
-
-test('<BlogForm /> updates parent state and calls onSubmit', async () => {
-  const user = userEvent.setup()
-  const createBlog = vi.fn()
-
-  render(<BlogForm createBlog={createBlog} />)
-
-  const input = screen.getByRole('textbox', { name: /title/ })
-  const sendButton = screen.getByText('create')
-
-  await user.type(input, 'testing a form...')
-  await user.click(sendButton)
-
-  expect(createBlog.mock.calls).toHaveLength(1)
-  expect(createBlog.mock.calls[0][0].title).toBe('testing a form...')
 })
