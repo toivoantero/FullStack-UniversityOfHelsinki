@@ -34,15 +34,15 @@ const Blog = ({ blog, user, updateBlog, removeBlog }) => {
   }
 
   return (
-    <div style={blogStyle}>
+    <div data-testid="blog-element" style={blogStyle}>
       <div>
         {blog.title} {blog.author}
-        <button style={hideWhenVisible} onClick={() => setVisible(true)}>view</button>
+        <button data-testid="view-button" style={hideWhenVisible} onClick={() => setVisible(true)}>view</button>
         <button style={showWhenVisible} onClick={() => setVisible(false)}>hide</button>
       </div>
       <div data-testid="hideShowInfo" style={showWhenVisible}>
         {blog.url}<br />
-        likes {blog.likes}<button onClick={addLikes}>like</button><br />
+        <span>likes {blog.likes}</span><button data-testid="like-button" onClick={addLikes}>like</button><br />
         {blog.user?.name}<br />
         {user?.username === blog.user?.username && (
           <button onClick={deleteBlog}>remove</button>

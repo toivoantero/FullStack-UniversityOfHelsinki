@@ -16,6 +16,7 @@ beforeEach(async () => {
 
   const passwordHash = await bcrypt.hash('daapa', 10)
   const user = new User({
+    name: 'Käyttäväinen',
     username: 'diipa',
     passwordHash
   })
@@ -42,7 +43,13 @@ describe('when there is initially some blogs saved', () => {
     assert(ids)
   })
 
-  test('a specific blog can be viewed', async () => {
+  test.only('a specific blog can be viewed', async () => {
+    const loginResponse = await api
+      .post('/api/login')
+      .send({ username: 'diipa', password: 'daapa' })
+      .expect(200)
+    const token = loginResponse.body.token
+
     const updatedBlog = {
       title: 'ParasBlogi',
       author: 'Jaska',
@@ -54,6 +61,7 @@ describe('when there is initially some blogs saved', () => {
 
     const resultBlog = await api
       .put(`/api/blogs/${blogToPut.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send(updatedBlog)
       .expect(200)
       .expect('Content-Type', /application\/json/)

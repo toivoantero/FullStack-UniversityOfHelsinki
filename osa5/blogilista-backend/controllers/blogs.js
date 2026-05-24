@@ -36,7 +36,7 @@ blogsRouter.post('/', userExtractor, async (request, response) => {
   user.blogs = user.blogs.concat(savedBlog._id)
   await user.save()
 
-  if (body.title && body.url) {
+  if (body.title) {
     response.status(201).json(savedBlog)
   } else {
     response.status(400).json(savedBlog)
@@ -66,39 +66,32 @@ blogsRouter.delete('/:id', userExtractor, async (request, response) => {
   }
 })
 
-blogsRouter.put('/:id', async (request, response) => {
+blogsRouter.put('/:id', userExtractor, async (request, response) => {
   const { title, author, url, likes } = request.body
 
-  const blog = await Blog.findById(request.params.id)
-  if (!blog) {
-    return response.status(404).end()
+  const decodedToken = jwt.verify(request.token, process.env.SECRET)
+
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: 'token invalid' })
   }
+  
+  const user = request.user
+
+  if (!user) {
+    return response.status(400).json({ error: 'userId missing or not valid' })
+  }
+
+  const blog = await Blog.findById(request.params.id)
+
   blog.title = title
   blog.author = author
   blog.url = url
   blog.likes = likes
+  blog.user = user._id
 
   const updatedBlog = await blog.save()
   response.json(updatedBlog)
   return updatedBlog
-  /*
-        Blog.findById(request.params.id)
-            .then(blog => {
-                if (!blog) {
-                    return response.status(404).end()
-                }
-    
-                blog.title = title
-                blog.author = author
-                blog.url = url
-                blog.likes = likes
-    
-                const updatedBlog = await blog.save()
-                response.json(updatedBlog)
-    
-                return updatedBlog
-            })
-                */
 })
 
 module.exports = blogsRouter
