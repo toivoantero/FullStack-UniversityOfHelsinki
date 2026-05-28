@@ -14,7 +14,6 @@ test('renders title', () => {
     </MemoryRouter>
   )
 
-  screen.debug()
   const title = screen.getByText(/paras blogi/)
   expect(title).toBeDefined()
 })

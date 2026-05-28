@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Notification from './Notification'
+import { TextField, Button } from '@mui/material'
 
 const LoginForm = ({ logUserIn, notificationMessage }) => {
   const navigate = useNavigate()
@@ -21,28 +22,28 @@ const LoginForm = ({ logUserIn, notificationMessage }) => {
       <Notification message={notificationMessage} />
       <form onSubmit={handleLogin}>
         <div>
-          <label>
-            username
-            <input
-              type="text"
-              name="username"
-              value={username}
-              onChange={event => setUsername(event.target.value)}
-            />
-          </label>
+          <TextField
+            label="username"
+            type="text"
+            name="username"
+            value={username}
+            onChange={event => setUsername(event.target.value)}
+            variant="standard"
+          />
         </div>
         <div>
-          <label>
-            password
-            <input
-              type="password"
-              name="password"
-              value={password}
-              onChange={event => setPassword(event.target.value)}
-            />
-          </label>
+          <TextField
+            label="password"
+            type="password"
+            name="password"
+            value={password}
+            onChange={event => setPassword(event.target.value)}
+            variant="standard"
+          />
         </div>
-        <button type="submit">login</button>
+        <Button type="submit" variant="contained" style={{ margin: 10 }}>
+          login
+        </Button>
       </form>
     </div>
   )

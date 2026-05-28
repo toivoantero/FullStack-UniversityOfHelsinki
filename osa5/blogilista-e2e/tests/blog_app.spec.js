@@ -51,7 +51,7 @@ describe('Blog app', () => {
       await createBlog(page, 'a blog created by playwright')
       await page.getByText(/^a blog created by playwright/i).click()
       await page.getByRole('button', { name: 'like' }).click()
-      await expect(page.getByText(/likes 1/)).toBeVisible()
+      await expect(page.getByText(/1 likes/)).toBeVisible()
     })
 
     test('a blog can be deleted', async ({ page }) => {
@@ -76,7 +76,7 @@ describe('Blog app', () => {
 
       await createBlog(page, 'a blog created by Matti')
 
-      await page.getByRole('button', { name: 'logout' }).click()
+      await page.getByText('logout').click()
       await page.getByText('login').click()
       await loginWith(page, 'toinen', 'salasana')
       await page.getByText(/^a blog created by Matti/i).click()
@@ -103,7 +103,7 @@ describe('Blog app', () => {
         await blogiB.getByText('like', { exact: true }).click()
 
         // tarkistetaan että like on lisätty
-        await expect(blogiB.getByText('likes')).toHaveText('likes 1')
+        await expect(blogiB.getByText('likes')).toHaveText('1 likes')
 
         // tarkistetaan että blogi B on ylinnä
         await expect(ylinBlogi).toContainText('blogi B')
@@ -114,11 +114,11 @@ describe('Blog app', () => {
         // lisätään 2 likeä blogiin A
         await blogiA.getByText('view').click()
         await blogiA.getByText('like', { exact: true }).click()
-        await expect(blogiA.getByText('likes')).toHaveText('likes 1')
+        await expect(blogiA.getByText('likes')).toHaveText('1 likes')
         await blogiA.getByText('like', { exact: true }).click()
 
         // tarkistetaan että liket on lisätty
-        await expect(blogiA.getByText('likes')).toHaveText('likes 2')
+        await expect(blogiA.getByText('likes')).toHaveText('2 likes')
 
         // tarkistetaan että blogi A on ylinnä
         await expect(ylinBlogi).toContainText('blogi A')

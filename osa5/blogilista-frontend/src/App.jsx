@@ -11,6 +11,8 @@ import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 import BlogList from './components/BlogList'
+import { Container } from '@mui/material'
+import { AppBar, Toolbar, Button, Typography } from '@mui/material'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -101,41 +103,45 @@ const App = () => {
     }
   }
 
-  const padding = {
-    padding: 5
-  }
-
   return (
-    <Router>
-      <div>
-        <Link style={padding} to="/blogs">blogs</Link>
-        <Link style={padding} to="/create">new blog</Link>
-        {!user ? <Link style={padding} to="/login">login</Link> : <Link style={padding} to="/"><button onClick={handleLogout}>logout</button></Link>}
-      </div>
-
-      <Routes>
-        <Route path="/blogs/:id" element={
-          <Blog
-            blogs={blogs}
-            user={user}
-            updateBlog={addLikes}
-            removeBlog={deleteBlog}
-          />
-        } />
-        <Route path="/blogs" element={
-          <BlogList blogs={blogs} notificationMessage={notificationMessage} />
-        } />
-        <Route path="/" element={
-          <BlogList blogs={blogs} notificationMessage={notificationMessage} />
-        } />
-        <Route path="/create" element={
-          <BlogForm user={user} createBlog={addBlog} />
-        } />
-        <Route path="/login" element={
-          <LoginForm logUserIn={handleLogin} notificationMessage={notificationMessage} />
-        } />
-      </Routes>
-    </Router>
+    <Container>
+      <Router>
+        <AppBar position="static">
+          <Toolbar>
+            <Typography variant='h4' sx={{ flexGrow: 1, fontWeight: '100' }}>blog application</Typography>
+            <Button color="inherit" component={Link} to="/">blogs</Button>
+            <Button color="inherit" component={Link} to="/create">new blog</Button>
+            {!user
+              ? <Button color="inherit" component={Link} to="/login">login</Button>
+              : <Button color="inherit" component={Link} to="/" onClick={handleLogout}>
+                logout
+              </Button>}
+          </Toolbar>
+        </AppBar>
+        <Routes>
+          <Route path="/blogs/:id" element={
+            <Blog
+              blogs={blogs}
+              user={user}
+              updateBlog={addLikes}
+              removeBlog={deleteBlog}
+            />
+          } />
+          <Route path="/blogs" element={
+            <BlogList blogs={blogs} notificationMessage={notificationMessage} />
+          } />
+          <Route path="/" element={
+            <BlogList blogs={blogs} notificationMessage={notificationMessage} />
+          } />
+          <Route path="/create" element={
+            <BlogForm user={user} createBlog={addBlog} />
+          } />
+          <Route path="/login" element={
+            <LoginForm logUserIn={handleLogin} notificationMessage={notificationMessage} />
+          } />
+        </Routes>
+      </Router>
+    </Container>
   )
 }
 
