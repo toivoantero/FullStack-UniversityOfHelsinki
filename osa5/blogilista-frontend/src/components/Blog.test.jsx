@@ -1,46 +1,118 @@
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
 
 test('renders title', () => {
-  const blog = {
-    title: 'paras blogi'
-  }
+  const blogs = [
+    { title: 'paras blogi' }
+  ]
 
-  render(<Blog blog={blog} />)
+  render(
+    <MemoryRouter>
+      <Blog blogs={blogs} />
+    </MemoryRouter>
+  )
 
-  const title = screen.getByText('paras blogi')
+  screen.debug()
+  const title = screen.getByText(/paras blogi/)
   expect(title).toBeDefined()
 })
 
-test('renders url, likes and the user after the button is pressed', async () => {
-  const blog = {
-    title: 'paras blogi',
-    likes: 3,
-    url: 'www.abc.def',
-    user: {
+describe('the user who is not logged in', () => {
+  test('will see the blog info but not the like- and remove-buttons', async () => {
+    const blogs = [{
+      title: 'paras blogi',
+      likes: 3
+    }]
+
+    render(
+      <MemoryRouter>
+        <Blog blogs={blogs} />
+      </MemoryRouter>
+    )
+
+    const title = screen.getByText(/paras blogi/)
+    expect(title).toBeVisible()
+    const likes = screen.getByText(/likes/)
+    expect(likes).toBeVisible()
+    const removeButton = screen.queryByText('remove')
+    expect(removeButton).toBeNull()
+    const likeButton = screen.queryByText('like')
+    expect(likeButton).toBeNull()
+  })
+})
+
+describe('the logged in user', () => {
+  test('who did not add the blog will see the like-button but not the remove-button', async () => {
+    const blogs = [{
+      title: 'paras blogi',
+      likes: 3,
+      user: {
+        username: 'mliimatainen',
+        name: 'Markus',
+        id: '72fcddfbdc67c6e885605dbb'
+      }
+    }]
+
+    const user = {
       username: 'diipa',
-      name: 'Login testaaja',
+      name: 'Käyttäväinen',
       id: '69fcddfbdc67c6e885604dee'
     }
-  }
 
-  render(<Blog blog={blog} />)
+    render(
+      <MemoryRouter>
+        <Blog blogs={blogs} user={user} />
+      </MemoryRouter>
+    )
 
-  const element = screen.getByTestId('hideShowInfo')
-  expect(element).not.toBeVisible()
+    const likeButton = screen.getByText('like')
+    expect(likeButton).toBeVisible()
+    const removeButton = screen.queryByText('remove')
+    expect(removeButton).toBeNull()
+  })
 
-  const user = userEvent.setup()
-  const button = screen.getByText('view')
-  await user.click(button)
-  expect(element).toBeVisible()
+  test('who did also add the blog will see the remove-button', async () => {
+    const blogs = [{
+      title: 'paras blogi',
+      likes: 3,
+      user: {
+        username: 'diipa',
+        name: 'Käyttäväinen',
+        id: '69fcddfbdc67c6e885604dee'
+      }
+    }]
+
+    const user = {
+      username: 'diipa',
+      name: 'Käyttäväinen',
+      id: '69fcddfbdc67c6e885604dee'
+    }
+
+    render(
+      <MemoryRouter>
+        <Blog blogs={blogs} user={user} />
+      </MemoryRouter>
+    )
+
+    const likeButton = screen.getByText('like')
+    expect(likeButton).toBeVisible()
+    const removeButton = screen.getByText('remove')
+    expect(removeButton).toBeVisible()
+  })
 })
 
 test('clicking the like-button twice calls event handler twice', async () => {
-  const blog = {}
+  const blogs = [{}]
+  const adder = {}
   const mockHandler = vi.fn()
 
-  render(<Blog blog={blog} updateBlog={mockHandler} />)
+  render(
+    <MemoryRouter>
+      <Blog blogs={blogs} user={adder} updateBlog={mockHandler} />
+    </MemoryRouter>
+  )
 
   const user = userEvent.setup()
   const button = screen.getByText('like')

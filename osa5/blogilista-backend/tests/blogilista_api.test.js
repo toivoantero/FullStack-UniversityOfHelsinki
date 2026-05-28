@@ -43,7 +43,7 @@ describe('when there is initially some blogs saved', () => {
     assert(ids)
   })
 
-  test.only('a specific blog can be viewed', async () => {
+  test('a specific blog can be viewed', async () => {
     const loginResponse = await api
       .post('/api/login')
       .send({ username: 'diipa', password: 'daapa' })

@@ -1,6 +1,9 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import Notification from './Notification'
 
-const LoginForm = ({ logUserIn }) => {
+const LoginForm = ({ logUserIn, notificationMessage }) => {
+  const navigate = useNavigate()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
@@ -9,11 +12,13 @@ const LoginForm = ({ logUserIn }) => {
     logUserIn({ username, password })
     setUsername('')
     setPassword('')
+    navigate('/')
   }
 
   return (
     <div>
       <h2>Log in to application</h2>
+      <Notification message={notificationMessage} />
       <form onSubmit={handleLogin}>
         <div>
           <label>

@@ -1,12 +1,18 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import BlogForm from './BlogForm'
+import { MemoryRouter } from 'react-router-dom'
 
 test('<BlogForm /> calls the callback function with the correct data when the blog is created', async () => {
   const user = userEvent.setup()
   const createBlog = vi.fn()
+  const viewer = {}
 
-  render(<BlogForm createBlog={createBlog} />)
+  render(
+    <MemoryRouter>
+      <BlogForm createBlog={createBlog} user={viewer} />
+    </MemoryRouter>
+  )
 
   const input = screen.getByRole('textbox', { name: /title/ })
   const sendButton = screen.getByText('create')

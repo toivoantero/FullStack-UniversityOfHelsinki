@@ -16,24 +16,29 @@ describe('Blog app', () => {
   })
 
   test('Login form is shown', async ({ page }) => {
+    await page.getByText('login').click()
     await expect(page.getByText('Log in to application')).toBeVisible()
   })
 
   describe('Login', () => {
     test('succeeds with correct credentials', async ({ page }) => {
+      await page.getByText('login').click()
+      await expect(page.getByText('Log in to application')).toBeVisible()
       await loginWith(page, 'mluukkai', 'salainen')
       await expect(page.getByText('Matti Luukkainen logged in')).toBeVisible()
     })
 
     test('fails with wrong credentials', async ({ page }) => {
+      await page.getByText('login').click()
       await loginWith(page, 'mluukkai', 'wrong')
       await expect(page.getByText('wrong username or password')).toBeVisible()
       await expect(page.getByText('Matti Luukkainen logged in')).not.toBeVisible()
     })
   })
 
-  describe('When logged in', () => {
+  describe.only('When logged in', () => {
     beforeEach(async ({ page }) => {
+      await page.getByText('login').click()
       await loginWith(page, 'mluukkai', 'salainen')
     })
 
@@ -44,7 +49,7 @@ describe('Blog app', () => {
 
     test('a blog can be liked', async ({ page }) => {
       await createBlog(page, 'a blog created by playwright')
-      await page.getByText(/^a blog created by playwright/i).getByRole('button', { name: 'view' }).click()
+      await page.getByText(/^a blog created by playwright/i).click()
       await page.getByRole('button', { name: 'like' }).click()
       await expect(page.getByText(/likes 1/)).toBeVisible()
     })
@@ -55,7 +60,7 @@ describe('Blog app', () => {
       });
 
       await createBlog(page, 'a blog created by playwright')
-      await page.getByText(/^a blog created by playwright/i).getByRole('button', { name: 'view' }).click()
+      await page.getByText(/^a blog created by playwright/i).click()
       await page.getByRole('button', { name: 'remove' }).click()
       await expect(page.getByText(/^a blog created by playwright/i)).not.toBeVisible()
     })
@@ -72,9 +77,10 @@ describe('Blog app', () => {
       await createBlog(page, 'a blog created by Matti')
 
       await page.getByRole('button', { name: 'logout' }).click()
+      await page.getByText('login').click()
       await loginWith(page, 'toinen', 'salasana')
-      await page.getByText(/^a blog created by Matti/i).getByRole('button', { name: 'view' }).click()
-      await expect(page.getByTestId('hideShowInfo').getByRole('button', { name: 'remove' })).not.toBeVisible()
+      await page.getByText(/^a blog created by Matti/i).click()
+      await expect(page.getByRole('button', { name: 'remove' })).not.toBeVisible()
     })
 
     describe('and several notes exists', () => {

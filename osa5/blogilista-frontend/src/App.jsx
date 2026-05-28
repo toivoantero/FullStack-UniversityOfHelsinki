@@ -1,4 +1,8 @@
 import { useState, useEffect } from 'react'
+import {
+  BrowserRouter as Router,
+  Routes, Route, Link
+} from 'react-router-dom'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -6,6 +10,7 @@ import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
+import BlogList from './components/BlogList'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -36,6 +41,13 @@ const App = () => {
       )
       blogService.setToken(user.token)
       setUser(user)
+      setNotificationMessage({
+        content: `${user.name} logged in`,
+        type: 'success'
+      })
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 4000)
     } catch {
       setNotificationMessage({
         content: 'wrong username or password',
@@ -49,7 +61,8 @@ const App = () => {
 
   const handleLogout = () => {
     window.localStorage.clear()
-    window.location.reload()
+    setUser(null)
+    blogService.setToken(null)
   }
 
   const addBlog = blogObject => {
@@ -81,41 +94,48 @@ const App = () => {
     if (confirm('Remove blog ' + blogObject.title + ' by ' + blogObject.author + '?')) {
       blogService
         .remove(blogObject.id)
-      window.location.reload()
+        .then(() => {
+          setBlogs(blogs.filter(b => b.id !== blogObject.id))
+          setRefresh(!refresh)
+        })
     }
   }
 
+  const padding = {
+    padding: 5
+  }
+
   return (
-    <div>
-      <h2>blogs</h2>
-      <Notification message={notificationMessage} />
-      {!user &&
-        <LoginForm
-          logUserIn={handleLogin}
-        />}
-      {user && (
-        <div>
-          <p>{user.name} logged in</p>
-          <button onClick={handleLogout}>logout</button>
-          <Togglable buttonLabel='create new blog'>
-            <BlogForm
-              createBlog={addBlog}
-            />
-          </Togglable>
-          <br />
-          <div data-testid="bloglist">
-            {blogs.map(blog =>
-              <Blog
-                key={blog.id}
-                blog={blog}
-                user={user}
-                updateBlog={addLikes}
-                removeBlog={deleteBlog} />
-            )}
-          </div>
-        </div>
-      )}
-    </div>
+    <Router>
+      <div>
+        <Link style={padding} to="/blogs">blogs</Link>
+        <Link style={padding} to="/create">new blog</Link>
+        {!user ? <Link style={padding} to="/login">login</Link> : <Link style={padding} to="/"><button onClick={handleLogout}>logout</button></Link>}
+      </div>
+
+      <Routes>
+        <Route path="/blogs/:id" element={
+          <Blog
+            blogs={blogs}
+            user={user}
+            updateBlog={addLikes}
+            removeBlog={deleteBlog}
+          />
+        } />
+        <Route path="/blogs" element={
+          <BlogList blogs={blogs} notificationMessage={notificationMessage} />
+        } />
+        <Route path="/" element={
+          <BlogList blogs={blogs} notificationMessage={notificationMessage} />
+        } />
+        <Route path="/create" element={
+          <BlogForm user={user} createBlog={addBlog} />
+        } />
+        <Route path="/login" element={
+          <LoginForm logUserIn={handleLogin} notificationMessage={notificationMessage} />
+        } />
+      </Routes>
+    </Router>
   )
 }
 

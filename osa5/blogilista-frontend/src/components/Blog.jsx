@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
 
-const Blog = ({ blog, user, updateBlog, removeBlog }) => {
-  const [visible, setVisible] = useState(false)
-  const hideWhenVisible = { display: visible ? 'none' : '' }
-  const showWhenVisible = { display: visible ? '' : 'none' }
+const Blog = ({ blogs, user, updateBlog, removeBlog }) => {
+  const navigate = useNavigate()
+  const id = useParams().id
+  const blog = blogs.find(n => n.id === id)
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -31,20 +31,23 @@ const Blog = ({ blog, user, updateBlog, removeBlog }) => {
       title: blog.title,
       author: blog.author
     })
+    navigate('/')
   }
 
   return (
     <div data-testid="blog-element" style={blogStyle}>
       <div>
-        {blog.title} {blog.author}
-        <button data-testid="view-button" style={hideWhenVisible} onClick={() => setVisible(true)}>view</button>
-        <button style={showWhenVisible} onClick={() => setVisible(false)}>hide</button>
+        <h3>{blog.author}: {blog.title}</h3>
       </div>
-      <div data-testid="hideShowInfo" style={showWhenVisible}>
+      <div data-testid="hideShowInfo">
         {blog.url}<br />
-        <span>likes {blog.likes}</span><button data-testid="like-button" onClick={addLikes}>like</button><br />
-        {blog.user?.name}<br />
-        {user?.username === blog.user?.username && (
+        <span>likes {blog.likes}</span>
+        {user && (
+          <button data-testid="like-button" onClick={addLikes}>like</button>
+        )}
+        <br />
+        Added by {blog.user?.name}<br />
+        {(user && user?.username === blog.user?.username) && (
           <button onClick={deleteBlog}>remove</button>
         )}
       </div>

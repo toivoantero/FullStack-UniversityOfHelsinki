@@ -67,7 +67,7 @@ blogsRouter.delete('/:id', userExtractor, async (request, response) => {
 })
 
 blogsRouter.put('/:id', userExtractor, async (request, response) => {
-  const { title, author, url, likes } = request.body
+  const { title, author, url, likes, user } = request.body
 
   const decodedToken = jwt.verify(request.token, process.env.SECRET)
 
@@ -75,9 +75,9 @@ blogsRouter.put('/:id', userExtractor, async (request, response) => {
     return response.status(401).json({ error: 'token invalid' })
   }
   
-  const user = request.user
+  const viewer = request.user
 
-  if (!user) {
+  if (!viewer) {
     return response.status(400).json({ error: 'userId missing or not valid' })
   }
 
@@ -87,7 +87,7 @@ blogsRouter.put('/:id', userExtractor, async (request, response) => {
   blog.author = author
   blog.url = url
   blog.likes = likes
-  blog.user = user._id
+  blog.user = user.id
 
   const updatedBlog = await blog.save()
   response.json(updatedBlog)
