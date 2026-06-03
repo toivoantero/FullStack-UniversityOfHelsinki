@@ -3,7 +3,6 @@ import Anecdote from './Anecdote'
 
 const AnecdoteList = () => {
     const anecdotes = useAnecdotes()
-
     return (
         <ul>
             {anecdotes.map(anecdote => (

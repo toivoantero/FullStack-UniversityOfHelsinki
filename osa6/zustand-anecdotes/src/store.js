@@ -1,6 +1,6 @@
-
 import { create } from 'zustand'
-
+import anecdoteService from './services/anecdotes'
+/*
 const anecdotesAtStart = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
@@ -12,27 +12,57 @@ const anecdotesAtStart = [
 
 const getId = () => (100000 * Math.random()).toFixed(0)
 
-const asObject = anecdote => ({
-  content: anecdote,
+const asObject = anecdoteText => ({
+  content: anecdoteText,
   id: getId(),
   votes: 0
 })
-
-const useAnecdoteStore = create((set) => ({
-  anecdotes: anecdotesAtStart.map(asObject),
+*/
+const useAnecdoteStore = create((set, get) => ({
+  anecdotes: [],
   filterWord: '',
   actions: {
-    add: anecdote => set(
-      state => ({ anecdotes: state.anecdotes.concat(asObject(anecdote)) })
-    ),
-    vote: id => set(
-      state => ({
-        anecdotes: state.anecdotes.map(anecdote =>
-          anecdote.id === id ? { ...anecdote, votes: anecdote.votes + 1 } : anecdote
-        ).toSorted((a, b) => b.votes - a.votes)
-      })
-    ),
-    setFilter: value => set(() => ({ filterWord: value }))
+    add: async (content) => {
+      const newAnecdote = await anecdoteService.createNew(content)
+      set(state => ({ anecdotes: state.anecdotes.concat(newAnecdote) }))
+    },
+    vote: async (id) => {
+      const anecdote = get().anecdotes.find(a => a.id === id)
+      const updated = await anecdoteService.update(
+        id, { ...anecdote, votes: anecdote.votes + 1 }
+      )
+      set(
+        state => ({
+          anecdotes: state.anecdotes.map(a =>
+            a.id === id ? updated : a
+          ).toSorted((a, b) => b.votes - a.votes)
+        }))
+    },
+    deleteAnecdote: async (id) => {
+      const anecdote = get().anecdotes.find(a => a.id === id)
+      if (anecdote.votes != 0) {
+        return
+      } else {
+        await anecdoteService.remove(id)
+        set(
+          state => ({
+            anecdotes: state.anecdotes.filter(a => a.id !== id)
+          }))
+      }
+    },
+    setFilter: value => set(() => ({ filterWord: value })),
+    initialize: async () => {
+      const unsortedAnecdotes = await anecdoteService.getAll()
+      const anecdotes = unsortedAnecdotes.toSorted((a, b) => b.votes - a.votes)
+      set(() => ({ anecdotes }))
+    }
+  },
+}))
+
+const useNotificationStore = create((set) => ({
+  notification: '',
+  actions: {
+    setNotification: message => set(() => ({ notification: message }))
   },
 }))
 
@@ -45,3 +75,7 @@ export const useAnecdotes = () => {
   return filteredAnecdotes
 }
 export const useAnecdoteActions = () => useAnecdoteStore((state) => state.actions)
+
+export const useNotifications = () => useNotificationStore()
+export const useNotificationActions = () => useNotificationStore((state) => state.actions)
+

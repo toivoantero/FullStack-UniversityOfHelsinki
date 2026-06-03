@@ -1,13 +1,19 @@
 import { useAnecdoteActions } from '../store'
 import Anecdote from './Anecdote'
+import { useNotificationActions } from '../store'
 
 const AnecdoteForm = () => {
     const { add } = useAnecdoteActions()
+    const { setNotification } = useNotificationActions()
 
-    const addAnecdote = (e) => {
+    const addAnecdote = async (e) => {
         e.preventDefault()
         const content = e.target.anecdote.value
         add(content)
+        setNotification("You added an anecdote: '" + content + "'")
+        setTimeout(() => {
+            setNotification(null)
+        }, 5000)
         e.target.reset()
     }
 
@@ -17,9 +23,8 @@ const AnecdoteForm = () => {
             <form onSubmit={addAnecdote}>
                 <div>
                     <input name="anecdote" />
-                    <button type="submit">add</button>
                 </div>
-                <button>create</button>
+                <button type="submit">create</button>
             </form>
         </div>
     )
