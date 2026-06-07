@@ -1,16 +1,19 @@
+import AnecdoteContext from "../NotificationContext"
+import useNotify from "../hooks/useNotify"
+
 const Notification = () => {
+  const { notification } = useNotify()
+  
   const style = {
     border: 'solid',
     padding: 10,
     borderWidth: 1,
     marginBottom: 5
   }
-  
-  if (true) return null
 
   return (
     <div style={style}>
-      
+      {notification}
     </div>
   )
 }

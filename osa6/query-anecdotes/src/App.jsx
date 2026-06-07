@@ -3,12 +3,12 @@ import AnecdoteForm from './components/AnecdoteForm'
 import Notification from './components/Notification'
 
 const App = () => {
-  const { anecdotes, isPending, isError, handleVote } = useAnecdotes()
+  const { anecdotes, getIsPending, getIsError, handleVote } = useAnecdotes()
 
-  if (isPending) {
+  if (getIsPending) {
     return <div>loading data...</div>
   }
-  if (isError) {
+  if (getIsError) {
     return <span>anecdote service not available due to problems in server</span>
   }
 
