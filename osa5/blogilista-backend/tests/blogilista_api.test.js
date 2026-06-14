@@ -43,7 +43,7 @@ describe('when there is initially some blogs saved', () => {
     assert(ids)
   })
 
-  test('a specific blog can be viewed', async () => {
+  test('a specific blog can be updated', async () => {
     const loginResponse = await api
       .post('/api/login')
       .send({ username: 'diipa', password: 'daapa' })
@@ -54,7 +54,12 @@ describe('when there is initially some blogs saved', () => {
       title: 'ParasBlogi',
       author: 'Jaska',
       url: 'www.ok.fi',
-      likes: 2
+      likes: 2,
+      user: {
+        username: 'diipa',
+        name: 'Käyttäväinen',
+        id: '6a0e3a1dda3c4cc83b0088df'
+      }
     }
     const blogsAtStart = await helper.blogsInDb()
     const blogToPut = blogsAtStart[0]
@@ -66,7 +71,8 @@ describe('when there is initially some blogs saved', () => {
       .expect(200)
       .expect('Content-Type', /application\/json/)
 
-    assert.deepStrictEqual(resultBlog.body.likes, updatedBlog.likes)
+    assert.notStrictEqual(blogToPut.likes, updatedBlog.likes)
+    assert.strictEqual(resultBlog.body.likes, updatedBlog.likes)
   })
 
   test('a blog can be deleted', async () => {

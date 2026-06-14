@@ -36,7 +36,7 @@ describe('Blog app', () => {
     })
   })
 
-  describe.only('When logged in', () => {
+  describe('When logged in', () => {
     beforeEach(async ({ page }) => {
       await page.getByText('login').click()
       await loginWith(page, 'mluukkai', 'salainen')
