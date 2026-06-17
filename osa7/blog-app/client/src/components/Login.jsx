@@ -1,23 +1,22 @@
-import { useState } from 'react'
-import { FormControl, Input, Button, InputLabel } from '@mui/material'
+import { useState } from "react";
+import { FormControl, Input, Button, InputLabel } from "@mui/material";
 
 const Login = ({ doLogin }) => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-
-  const handleLogin = async event => {
-    event.preventDefault()
+  const handleLogin = async (event) => {
+    event.preventDefault();
 
     try {
-      await doLogin({ username, password })
-      setUsername('')
-      setPassword('')
+      await doLogin({ username, password });
+      setUsername("");
+      setPassword("");
     } catch (e) {
-      console.log(e)
-      console.log('wrong credentials')
+      console.log(e);
+      console.log("wrong credentials");
     }
-  }
+  };
 
   return (
     <div>
@@ -25,9 +24,7 @@ const Login = ({ doLogin }) => {
       <form onSubmit={handleLogin}>
         <div style={{ marginBottom: 8 }}>
           <FormControl>
-            <InputLabel>
-              username
-            </InputLabel>
+            <InputLabel>username</InputLabel>
             <Input
               value={username}
               onChange={({ target }) => setUsername(target.value)}
@@ -36,9 +33,7 @@ const Login = ({ doLogin }) => {
         </div>
         <div style={{ marginBottom: 8 }}>
           <FormControl>
-            <InputLabel>
-              password
-            </InputLabel>
+            <InputLabel>password</InputLabel>
             <Input
               type="password"
               value={password}
@@ -53,7 +48,7 @@ const Login = ({ doLogin }) => {
         </div>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

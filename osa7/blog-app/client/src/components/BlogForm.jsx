@@ -1,18 +1,18 @@
-import { useState } from 'react'
-import { TextField, Button, Stack } from '@mui/material'
+import { useState } from "react";
+import { TextField, Button, Stack } from "@mui/material";
 
 const BlogForm = ({ createBlog }) => {
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [url, setUrl] = useState("");
 
-  const handleCreateNew = event => {
-    event.preventDefault()
-    createBlog({ title, author, url })
-    setTitle('')
-    setAuthor('')
-    setUrl('')
-  }
+  const handleCreateNew = (event) => {
+    event.preventDefault();
+    createBlog({ title, author, url });
+    setTitle("");
+    setAuthor("");
+    setUrl("");
+  };
 
   return (
     <div>
@@ -37,13 +37,17 @@ const BlogForm = ({ createBlog }) => {
             value={url}
             onChange={({ target }) => setUrl(target.value)}
           />
-          <Button type="submit" variant="contained" sx={{ alignSelf: 'flex-start' }}>
+          <Button
+            type="submit"
+            variant="contained"
+            sx={{ alignSelf: "flex-start" }}
+          >
             create
           </Button>
         </Stack>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default BlogForm
+export default BlogForm;

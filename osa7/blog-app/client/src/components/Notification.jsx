@@ -1,17 +1,17 @@
-import { Alert } from '@mui/material'
+import { Alert } from "@mui/material";
 
 const Notification = ({ notification }) => {
-  const { message, isError } = notification
+  const { message, isError } = notification;
 
   if (!message) {
-    return null
+    return null;
   }
 
   return (
-    <Alert severity={isError ? 'error' : 'success'} sx={{ my: 2 }}>
+    <Alert severity={isError ? "error" : "success"} sx={{ my: 2 }}>
       {message}
     </Alert>
-  )
-}
+  );
+};
 
-export default Notification
+export default Notification;
