@@ -1,12 +1,10 @@
 import { useState } from 'react'
-
 import { FormControl, Input, Button, InputLabel } from '@mui/material'
 
 const Login = ({ doLogin }) => {
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-
 
   const handleLogin = async event => {
     event.preventDefault()

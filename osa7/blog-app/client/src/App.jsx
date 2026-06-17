@@ -1,19 +1,16 @@
 import { useState, useEffect } from 'react'
-
 import {
   Routes, Route, Link, useMatch, useNavigate
 } from 'react-router-dom'
-
 import { Container, AppBar, Toolbar, Button, Typography } from '@mui/material'
-
 import BlogList from './components/BlogList'
 import Login from './components/Login'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
-
 import Notification from './components/Notification'
+import ErrorBoundary from './components/ErrorBoundary'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -123,22 +120,40 @@ const App = () => {
       <Notification notification={notification} />
 
       <Routes>
+        <Route path="/*" element={
+          <ErrorBoundary key="nonexistingroute">
+            <h1>404 - Page not found</h1>
+          </ErrorBoundary>
+        } />
         <Route path="/" element={
-          <BlogList blogs={blogs} />
+          <ErrorBoundary key="bloglist">
+            <BlogList blogs={blogs} />
+          </ErrorBoundary>
+        } />
+        <Route path="/blogs" element={
+          <ErrorBoundary key="bloglist">
+            <BlogList blogs={blogs} />
+          </ErrorBoundary>
         } />
         <Route path="/blogs/:id" element={
-          <Blog
-            blog={blog}
-            addLike={addLike}
-            currentUser={user}
-            removeBlog={removeBlog}
-          />
+          <ErrorBoundary key="blogview">
+            <Blog
+              blog={blog}
+              addLike={addLike}
+              currentUser={user}
+              removeBlog={removeBlog}
+            />
+          </ErrorBoundary>
         } />
         <Route path="/login" element={
-          <Login doLogin={doLogin} />
+          <ErrorBoundary key="login">
+            <Login doLogin={doLogin} />
+          </ErrorBoundary>
         } />
         <Route path="/create" element={
-          <BlogForm createBlog={addBlog} />
+          <ErrorBoundary key="create">
+            <BlogForm createBlog={addBlog} />
+          </ErrorBoundary>
         } />
       </Routes>
     </Container>

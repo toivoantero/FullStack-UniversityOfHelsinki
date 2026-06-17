@@ -7,6 +7,7 @@ const testingRouter = require('./controllers/testing')
 const usersRouter = require('./controllers/users')
 const config = require('./utils/config')
 const middleware = require('./utils/middleware')
+const path = require('path')
 
 const app = express()
 
@@ -22,6 +23,16 @@ app.use('/api/users', usersRouter)
 
 if (process.env.NODE_ENV === 'test') {
   app.use('/api/testing', testingRouter)
+}
+
+// serve the built Vite frontend in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../client/dist')))
+  console.log('Serving static files from', path.join(__dirname, '../client/dist'))
+  app.get('/*splat', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/dist/index.html'))
+    console.log('TÖÖT')
+  })
 }
 
 app.use(middleware.unknownEndpoint)

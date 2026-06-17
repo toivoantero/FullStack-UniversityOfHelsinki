@@ -3,12 +3,17 @@ import {
   Card, CardContent, Typography, Button, Box, Link,
   Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions
 } from '@mui/material'
+import ErrorBoundary from './ErrorBoundary'
 
 const Blog = ({ blog, addLike, currentUser, removeBlog }) => {
   const [confirmOpen, setConfirmOpen] = useState(false)
 
   if (!blog) {
-    return null
+    return (
+      <ErrorBoundary key="nonexistingblog">
+        <h1>404 - Page not found</h1>
+      </ErrorBoundary>
+    )
   }
 
   const canBeRemoved = () => currentUser && currentUser.username === blog.user.username

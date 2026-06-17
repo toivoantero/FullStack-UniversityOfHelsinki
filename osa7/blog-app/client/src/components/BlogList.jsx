@@ -5,7 +5,6 @@ const BlogList = ({ blogs }) => {
   return (
     <div>
       <h2>blogs</h2>
-
       <ul>
         {blogs
           .toSorted((a, b) => b.likes - a.likes)
@@ -15,7 +14,6 @@ const BlogList = ({ blogs }) => {
             </li>
           ))}
       </ul>
-
     </div>
   )
 }
