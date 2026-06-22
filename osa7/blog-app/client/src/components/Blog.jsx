@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -13,9 +14,16 @@ import {
   DialogActions,
 } from "@mui/material";
 import ErrorBoundary from "./ErrorBoundary";
+import { useBlogActions } from "../store";
+import { useNotificationActions } from "../store";
+import { useUser } from '../store'
 
-const Blog = ({ blog, addLike, currentUser, removeBlog }) => {
+const Blog = ({ blog }) => {
+  const navigation = useNavigate();
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const { deleteBlog, like } = useBlogActions()
+  const { setNotification } = useNotificationActions()
+  const user = useUser()
 
   if (!blog) {
     return (
@@ -26,11 +34,28 @@ const Blog = ({ blog, addLike, currentUser, removeBlog }) => {
   }
 
   const canBeRemoved = () =>
-    currentUser && currentUser.username === blog.user.username;
+    user && user.username === blog.user.username;
 
-  const handleRemove = () => {
-    removeBlog(blog);
-    setConfirmOpen(false);
+  const handleDelete = () => {
+    try {
+      deleteBlog(blog.id)
+      setNotification({ message: `Blog ${blog.title} by ${blog.author} removed` });
+      setTimeout(() => {
+        setNotification({ message: null });
+      }, 25000);
+      setConfirmOpen(false);
+      navigation("/");
+    } catch (error) {
+      console.log("Error while trying to delete a blog", error);
+    }
+  }
+
+  const addLike = () => {
+    try {
+      like(blog)
+    } catch (error) {
+      console.log("Error while trying to like a blog:", error);
+    }
   };
 
   return (
@@ -59,7 +84,7 @@ const Blog = ({ blog, addLike, currentUser, removeBlog }) => {
 
         <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 1 }}>
           <Typography variant="body1">{blog.likes} likes</Typography>
-          {currentUser && (
+          {user && (
             <Button
               size="small"
               variant="outlined"
@@ -90,7 +115,7 @@ const Blog = ({ blog, addLike, currentUser, removeBlog }) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setConfirmOpen(false)}>cancel</Button>
-          <Button onClick={handleRemove} color="error" variant="contained">
+          <Button onClick={handleDelete} color="error" variant="contained">
             remove
           </Button>
         </DialogActions>

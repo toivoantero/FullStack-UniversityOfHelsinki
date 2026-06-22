@@ -9,88 +9,40 @@ import Blog from "./components/Blog";
 import BlogForm from "./components/BlogForm";
 import Notification from "./components/Notification";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { useNotificationActions } from "./store";
+import { useBlogActions } from "./store";
+import { useBlogs } from './store'
+import { useUser } from './store'
+import { useUserActions } from "./store";
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [user, setUser] = useState(null);
-  const [notification, setNotification] = useState({ message: null });
-
   const navigation = useNavigate();
+  const blogs = useBlogs()
+  const user = useUser()
+  const { setNotification } = useNotificationActions()
+  const { initialize } = useBlogActions()
+  const { logout, keepUser } = useUserActions()
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
-  }, []);
+    initialize()
+  }, [initialize])
 
   useEffect(() => {
-    const userJSON = window.localStorage.getItem("loggedBlogappUser");
-    const user = JSON.parse(userJSON);
-
-    if (user) {
-      blogService.setToken(user.token);
-      setUser(user);
-    }
-  }, []);
-
-  const notifyWith = (message, isError = false) => {
-    setNotification({ message, isError });
-    setTimeout(() => {
-      setNotification({ message: null });
-    }, 25000);
-  };
-
-  const addBlog = async (blogObject) => {
-    try {
-      const createdBlog = await blogService.create(blogObject);
-      setBlogs(blogs.concat(createdBlog));
-      notifyWith(
-        `a new blog ${createdBlog.title} by ${createdBlog.author} added`,
-      );
-      navigation("/");
-    } catch (error) {
-      console.log("Creating new blog failed:", error);
-    }
-  };
-
-  const addLike = async (blog) => {
-    const newBlog = { ...blog, likes: blog.likes + 1, user: blog.user.id };
-    try {
-      const updatedBlog = await blogService.update(newBlog);
-      setBlogs(blogs.map((b) => (b.id === blog.id ? updatedBlog : b)));
-    } catch (error) {
-      console.log("Error while trying to like a blog:", error);
-    }
-  };
-
-  const removeBlog = async (blog) => {
-    try {
-      await blogService.remove(blog.id);
-      setBlogs(blogs.filter((b) => b.id !== blog.id));
-      notifyWith(`Blog ${blog.title} by ${blog.author} removed`);
-      navigation("/");
-    } catch (error) {
-      console.log("Error while trying to delete a blog", error);
-    }
-  };
-
-  const doLogin = async ({ username, password }) => {
-    try {
-      const user = await loginService.login({ username, password });
-
-      window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user));
-      blogService.setToken(user.token);
-      setUser(user);
-      navigation("/");
-    } catch {
-      notifyWith("wrong username or password", true);
-      console.log("wrong credentials");
-    }
-  };
-
-  const handleLogout = async () => {
-    window.localStorage.removeItem("loggedBlogappUser");
-    setUser(null);
-    navigation("/");
-  };
+    keepUser()
+  }, [keepUser])
+  /*
+    useEffect(() => {
+      const userJSON = window.localStorage.getItem("loggedBlogappUser");
+      const user = JSON.parse(userJSON);
+      console.log("USER: ", user)
+      console.log("P USER: ", persistentUser)
+  
+      if (user) {
+        console.log("ONNII", user)
+        blogService.setToken(user.token);
+      }
+    }, []);
+  */
 
   const match = useMatch("/blogs/:id");
   const blog = match ? blogs.find((b) => b.id === match.params.id) : null;
@@ -131,7 +83,10 @@ const App = () => {
               </Button>
               <Button
                 color="inherit"
-                onClick={handleLogout}
+                onClick={() => {
+                  logout()
+                  navigation("/");
+                }}
                 sx={{ "&:hover": { bgcolor: "rgba(255,255,255,0.2)" } }}
               >
                 logout
@@ -141,7 +96,7 @@ const App = () => {
         </Toolbar>
       </AppBar>
 
-      <Notification notification={notification} />
+      <Notification />
 
       <Routes>
         <Route
@@ -156,7 +111,7 @@ const App = () => {
           path="/"
           element={
             <ErrorBoundary key="bloglist">
-              <BlogList blogs={blogs} />
+              <BlogList />
             </ErrorBoundary>
           }
         />
@@ -164,7 +119,7 @@ const App = () => {
           path="/blogs"
           element={
             <ErrorBoundary key="bloglist">
-              <BlogList blogs={blogs} />
+              <BlogList />
             </ErrorBoundary>
           }
         />
@@ -174,9 +129,6 @@ const App = () => {
             <ErrorBoundary key="blogview">
               <Blog
                 blog={blog}
-                addLike={addLike}
-                currentUser={user}
-                removeBlog={removeBlog}
               />
             </ErrorBoundary>
           }
@@ -185,7 +137,7 @@ const App = () => {
           path="/login"
           element={
             <ErrorBoundary key="login">
-              <Login doLogin={doLogin} />
+              <Login />
             </ErrorBoundary>
           }
         />
@@ -193,7 +145,7 @@ const App = () => {
           path="/create"
           element={
             <ErrorBoundary key="create">
-              <BlogForm createBlog={addBlog} />
+              <BlogForm />
             </ErrorBoundary>
           }
         />

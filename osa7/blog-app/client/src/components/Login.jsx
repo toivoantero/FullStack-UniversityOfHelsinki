@@ -1,18 +1,27 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FormControl, Input, Button, InputLabel } from "@mui/material";
+import { useUserActions } from "../store";
+import { useNotificationActions } from "../store";
+import { useField } from "../hooks";
 
-const Login = ({ doLogin }) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+const Login = () => {
+  const navigation = useNavigate();
+  const { login } = useUserActions()
+  const { setNotification } = useNotificationActions()
+  const username = useField({});
+  const password = useField({ type: "password" });
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
-
+  const doLogin = async (e) => {
+    e.preventDefault()
     try {
-      await doLogin({ username, password });
-      setUsername("");
-      setPassword("");
+      login({ username: username.value, password: password.value });
+      navigation("/");
     } catch (e) {
+      setNotification({ message: "wrong username or password" });
+      setTimeout(() => {
+        setNotification({ message: null });
+      }, 25000);
       console.log(e);
       console.log("wrong credentials");
     }
@@ -21,13 +30,12 @@ const Login = ({ doLogin }) => {
   return (
     <div>
       <h2>Log in to application</h2>
-      <form onSubmit={handleLogin}>
+      <form onSubmit={doLogin}>
         <div style={{ marginBottom: 8 }}>
           <FormControl>
             <InputLabel>username</InputLabel>
             <Input
-              value={username}
-              onChange={({ target }) => setUsername(target.value)}
+              {...username}
             />
           </FormControl>
         </div>
@@ -35,9 +43,7 @@ const Login = ({ doLogin }) => {
           <FormControl>
             <InputLabel>password</InputLabel>
             <Input
-              type="password"
-              value={password}
-              onChange={({ target }) => setPassword(target.value)}
+              {...password}
             />
           </FormControl>
         </div>

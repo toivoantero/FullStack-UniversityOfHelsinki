@@ -1,41 +1,42 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { TextField, Button, Stack } from "@mui/material";
+import { useNotificationActions } from "../store";
+import { useBlogActions } from "../store";
+import { useField } from "../hooks";
 
-const BlogForm = ({ createBlog }) => {
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
+const BlogForm = () => {
+  const navigation = useNavigate();
+  const { add } = useBlogActions()
+  const { setNotification } = useNotificationActions()
+  const title = useField({ label: "title", size: "small" });
+  const author = useField({ label: "author", size: "small" });
+  const url = useField({ label: "url", size: "small" });
 
-  const handleCreateNew = (event) => {
-    event.preventDefault();
-    createBlog({ title, author, url });
-    setTitle("");
-    setAuthor("");
-    setUrl("");
-  };
+  const addBlog = async (e) => {
+    e.preventDefault()
+    add({ title: title.value, author: author.value, url: url.value })
+    setNotification({ message: `a new blog ${title.value} by ${author.value} added` });
+    setTimeout(() => {
+      setNotification({ message: null });
+    }, 25000);
+    navigation("/");
+    e.target.reset()
+  }
 
   return (
     <div>
       <h2>create new</h2>
-      <form onSubmit={handleCreateNew}>
+      <form onSubmit={addBlog}>
         <Stack spacing={2} sx={{ maxWidth: 400 }}>
           <TextField
-            label="title"
-            size="small"
-            value={title}
-            onChange={({ target }) => setTitle(target.value)}
+            {...title}
           />
           <TextField
-            label="author"
-            size="small"
-            value={author}
-            onChange={({ target }) => setAuthor(target.value)}
+            {...author}
           />
           <TextField
-            label="url"
-            size="small"
-            value={url}
-            onChange={({ target }) => setUrl(target.value)}
+            {...url}
           />
           <Button
             type="submit"
