@@ -1,7 +1,8 @@
 import { create } from 'zustand'
 import blogService from './services/blogs'
 import loginService from './services/login'
-import userService from './services/persistentUser'
+import persistentUserService from './services/persistentUser'
+import userService from './services/users'
 
 const useBlogStore = create((set, get) => ({
     blogs: [],
@@ -36,9 +37,10 @@ const useBlogStore = create((set, get) => ({
 
 const useUserStore = create((set) => ({
     user: null,
+    users: [],
     actions: {
         keepUser: () => {
-            const oldUser = userService.getUser()
+            const oldUser = persistentUserService.getUser()
             if (oldUser) {
                 blogService.setToken(oldUser.token);
                 set((state) => ({ ...state, user: oldUser }))
@@ -47,12 +49,16 @@ const useUserStore = create((set) => ({
         login: async ({ username, password }) => {
             const newUser = await loginService.login({ username, password });
             set((state) => ({ ...state, user: newUser }))
-            userService.saveUser(newUser)
+            persistentUserService.saveUser(newUser)
             blogService.setToken(newUser.token);
         },
-        logout: async () => {
+        logout: () => {
             set(() => ({ user: null }))
-            userService.removeUser()
+            persistentUserService.removeUser()
+        },
+        initializeUsers: async () => {
+            const users = await userService.getAll()
+            set(() => ({ users }))
         },
     }
 }))
@@ -69,5 +75,6 @@ export const useNotificationActions = () => useNotificationStore((state) => stat
 export const useBlogs = () => useBlogStore((state) => state.blogs)
 export const useBlogActions = () => useBlogStore((state) => state.actions)
 export const useUser = () => useUserStore((state) => state.user)
+export const useUsers = () => useUserStore((state) => state.users)
 export const useUserActions = () => useUserStore((state) => state.actions)
 

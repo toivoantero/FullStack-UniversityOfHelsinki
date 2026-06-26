@@ -2,50 +2,52 @@ import { useState, useEffect } from "react";
 import { Routes, Route, Link, useMatch, useNavigate } from "react-router-dom";
 import { Container, AppBar, Toolbar, Button, Typography } from "@mui/material";
 import BlogList from "./components/BlogList";
+import UserList from "./components/UserList";
 import Login from "./components/Login";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 import Blog from "./components/Blog";
 import BlogForm from "./components/BlogForm";
+import User from "./components/User";
 import Notification from "./components/Notification";
 import ErrorBoundary from "./components/ErrorBoundary";
-import { useNotificationActions } from "./store";
-import { useBlogActions } from "./store";
-import { useBlogs } from './store'
-import { useUser } from './store'
-import { useUserActions } from "./store";
+import {
+  useNotificationActions,
+  useBlogActions,
+  useBlogs,
+  useUser,
+  useUserActions,
+  useUsers
+} from "./store";
 
 const App = () => {
   const navigation = useNavigate();
   const blogs = useBlogs()
-  const user = useUser()
+  const users = useUsers()
+  const currentUser = useUser()
   const { setNotification } = useNotificationActions()
   const { initialize } = useBlogActions()
-  const { logout, keepUser } = useUserActions()
+  const { logout, keepUser, initializeUsers } = useUserActions()
 
   useEffect(() => {
     initialize()
   }, [initialize])
 
   useEffect(() => {
+    initializeUsers()
+  }, [initializeUsers])
+
+  useEffect(() => {
     keepUser()
   }, [keepUser])
-  /*
-    useEffect(() => {
-      const userJSON = window.localStorage.getItem("loggedBlogappUser");
-      const user = JSON.parse(userJSON);
-      console.log("USER: ", user)
-      console.log("P USER: ", persistentUser)
-  
-      if (user) {
-        console.log("ONNII", user)
-        blogService.setToken(user.token);
-      }
-    }, []);
-  */
 
-  const match = useMatch("/blogs/:id");
-  const blog = match ? blogs.find((b) => b.id === match.params.id) : null;
+  const getOne = (object) => {
+    const match = useMatch(`/${Object.keys(object)[0]}/:id`);
+    return match ? Object.values(object)[0].find((thing) => thing.id === match.params.id) : null;
+  }
+
+  const blog = getOne({ blogs })
+  const user = getOne({ users })
 
   return (
     <Container>
@@ -62,7 +64,15 @@ const App = () => {
           >
             blogs
           </Button>
-          {!user ? (
+          <Button
+            color="inherit"
+            component={Link}
+            to="/users"
+            sx={{ "&:hover": { bgcolor: "rgba(255,255,255,0.2)" } }}
+          >
+            users
+          </Button>
+          {!currentUser ? (
             <Button
               color="inherit"
               component={Link}
@@ -134,6 +144,24 @@ const App = () => {
           }
         />
         <Route
+          path="/users"
+          element={
+            <ErrorBoundary key="userlist">
+              <UserList />
+            </ErrorBoundary>
+          }
+        />
+        <Route
+          path="/users/:id"
+          element={
+            <ErrorBoundary key="userview">
+              <User
+                user={user}
+              />
+            </ErrorBoundary>
+          }
+        />
+        <Route
           path="/login"
           element={
             <ErrorBoundary key="login">
@@ -150,7 +178,7 @@ const App = () => {
           }
         />
       </Routes>
-    </Container>
+    </Container >
   );
 };
 
