@@ -2,7 +2,7 @@ import { Alert } from "@mui/material";
 import { useNotifications } from "../store";
 
 const Notification = () => {
-  const { message, isError } = useNotifications().notification
+  const { message, isError } = useNotifications().notification;
 
   if (!message) {
     return null;

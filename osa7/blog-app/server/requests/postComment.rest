@@ -1,0 +1,8 @@
+POST http://localhost:3003/api/comments
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImRpaXBhIiwiaWQiOiI2OWZjZGRmYmRjNjdjNmU4ODU2MDRkZWUiLCJpYXQiOjE3NzgxODI4Mjh9.1Qgcv0LZlSipm1_zVGsSlYufbCKYjlt26UIkbysCPt0
+
+{
+  "content": "neljäs kommentti blogiin",
+  "blog": "6a18317ba48c9a16a1dfce6c"
+}

@@ -1,9 +1,9 @@
 import Blog from "./Blog";
 import { Link } from "react-router-dom";
-import { useBlogs} from '../store'
+import { useBlogs } from "../store";
 
 const BlogList = () => {
-  const blogs = useBlogs()
+  const blogs = useBlogs();
 
   return (
     <div>

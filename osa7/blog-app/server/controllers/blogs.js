@@ -5,6 +5,7 @@ const { userExtractor } = require("../utils/middleware");
 blogsRouter.get("/", (request, response) => {
   Blog.find({})
     .populate("user", { username: 1, name: 1, id: 1 })
+    .populate("comments", { content: 1, blog: 1, id: 1 })
     .then((blogs) => {
       response.json(blogs);
     });
@@ -67,13 +68,11 @@ blogsRouter.put("/:id", async (request, response) => {
   blog.likes = likes;
 
   const updatedBlog = await blog.save();
-  const populatedBlog = await updatedBlog.populate("user", {
-    username: 1,
-    name: 1,
-    id: 1,
-  });
 
-  response.json(populatedBlog);
+  await updatedBlog.populate("user", { username: 1, name: 1, id: 1 });
+  await updatedBlog.populate("comments", { content: 1, id: 1 });
+
+  response.json(updatedBlog);
 });
 
 module.exports = blogsRouter;

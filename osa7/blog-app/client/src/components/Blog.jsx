@@ -1,29 +1,35 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ErrorBoundary from "./ErrorBoundary";
+import { useBlogActions, useNotificationActions, useUser } from "../store";
+import { useField } from "../hooks";
+import CommentIcon from "@mui/icons-material/Comment";
 import {
   Card,
   CardContent,
   Typography,
+  TextField,
   Button,
   Box,
   Link,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogContentText,
   DialogActions,
 } from "@mui/material";
-import ErrorBoundary from "./ErrorBoundary";
-import { useBlogActions } from "../store";
-import { useNotificationActions } from "../store";
-import { useUser } from '../store'
 
 const Blog = ({ blog }) => {
   const navigation = useNavigate();
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const { deleteBlog, like } = useBlogActions()
-  const { setNotification } = useNotificationActions()
-  const user = useUser()
+  const { deleteBlog, like, comment } = useBlogActions();
+  const { setNotification } = useNotificationActions();
+  const user = useUser();
+  const content = useField({ label: "comment", size: "small" });
 
   if (!blog) {
     return (
@@ -33,13 +39,14 @@ const Blog = ({ blog }) => {
     );
   }
 
-  const canBeRemoved = () =>
-    user && user.username === blog.user.username;
+  const canBeRemoved = () => user && user.username === blog.user.username;
 
   const handleDelete = () => {
     try {
-      deleteBlog(blog.id)
-      setNotification({ message: `Blog ${blog.title} by ${blog.author} removed` });
+      deleteBlog(blog.id);
+      setNotification({
+        message: `Blog ${blog.title} by ${blog.author} removed`,
+      });
       setTimeout(() => {
         setNotification({ message: null });
       }, 25000);
@@ -48,14 +55,24 @@ const Blog = ({ blog }) => {
     } catch (error) {
       console.log("Error while trying to delete a blog", error);
     }
-  }
+  };
 
   const addLike = () => {
     try {
-      like(blog)
+      like(blog);
     } catch (error) {
       console.log("Error while trying to like a blog:", error);
     }
+  };
+
+  const addComments = (e) => {
+    e.preventDefault();
+    comment({ content: content.value, blog: blog });
+    setNotification({ message: `a new comment added` });
+    setTimeout(() => {
+      setNotification({ message: null });
+    }, 25000);
+    e.target.reset();
   };
 
   return (
@@ -104,6 +121,32 @@ const Blog = ({ blog }) => {
             </Button>
           )}
         </Box>
+
+        <Typography style={{ marginTop: "40px" }} variant="h6">
+          comments
+        </Typography>
+
+        <form onSubmit={addComments}>
+          <TextField {...content} />
+          <Button
+            type="submit"
+            variant="contained"
+            sx={{ alignSelf: "flex-start", marginLeft: 2 }}
+          >
+            add comment
+          </Button>
+        </form>
+
+        <List>
+          {blog.comments.map((comment) => (
+            <ListItem key={comment.id}>
+              <ListItemIcon>
+                <CommentIcon />
+              </ListItemIcon>
+              <ListItemText primary={comment.content} />
+            </ListItem>
+          ))}
+        </List>
       </CardContent>
 
       <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>

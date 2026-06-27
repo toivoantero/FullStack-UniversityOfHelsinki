@@ -1,19 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FormControl, Input, Button, InputLabel } from "@mui/material";
-import { useUserActions } from "../store";
-import { useNotificationActions } from "../store";
+import { useUserActions, useNotificationActions } from "../store";
 import { useField } from "../hooks";
 
 const Login = () => {
   const navigation = useNavigate();
-  const { login } = useUserActions()
-  const { setNotification } = useNotificationActions()
+  const { login } = useUserActions();
+  const { setNotification } = useNotificationActions();
   const username = useField({});
   const password = useField({ type: "password" });
 
   const doLogin = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
       login({ username: username.value, password: password.value });
       navigation("/");
@@ -34,17 +33,13 @@ const Login = () => {
         <div style={{ marginBottom: 8 }}>
           <FormControl>
             <InputLabel>username</InputLabel>
-            <Input
-              {...username}
-            />
+            <Input {...username} />
           </FormControl>
         </div>
         <div style={{ marginBottom: 8 }}>
           <FormControl>
             <InputLabel>password</InputLabel>
-            <Input
-              {...password}
-            />
+            <Input {...password} />
           </FormControl>
         </div>
         <div style={{ marginTop: 8 }}>

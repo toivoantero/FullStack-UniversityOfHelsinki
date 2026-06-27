@@ -17,37 +17,39 @@ import {
   useBlogs,
   useUser,
   useUserActions,
-  useUsers
+  useUsers,
 } from "./store";
 
 const App = () => {
   const navigation = useNavigate();
-  const blogs = useBlogs()
-  const users = useUsers()
-  const currentUser = useUser()
-  const { setNotification } = useNotificationActions()
-  const { initialize } = useBlogActions()
-  const { logout, keepUser, initializeUsers } = useUserActions()
+  const blogs = useBlogs();
+  const users = useUsers();
+  const currentUser = useUser();
+  const { setNotification } = useNotificationActions();
+  const { initialize } = useBlogActions();
+  const { logout, keepUser, initializeUsers } = useUserActions();
 
   useEffect(() => {
-    initialize()
-  }, [initialize])
+    initialize();
+  }, [initialize]);
 
   useEffect(() => {
-    initializeUsers()
-  }, [initializeUsers])
+    initializeUsers();
+  }, [initializeUsers]);
 
   useEffect(() => {
-    keepUser()
-  }, [keepUser])
+    keepUser();
+  }, [keepUser]);
 
   const getOne = (object) => {
     const match = useMatch(`/${Object.keys(object)[0]}/:id`);
-    return match ? Object.values(object)[0].find((thing) => thing.id === match.params.id) : null;
-  }
+    return match
+      ? Object.values(object)[0].find((thing) => thing.id === match.params.id)
+      : null;
+  };
 
-  const blog = getOne({ blogs })
-  const user = getOne({ users })
+  const blog = getOne({ blogs });
+  const user = getOne({ users });
 
   return (
     <Container>
@@ -94,7 +96,7 @@ const App = () => {
               <Button
                 color="inherit"
                 onClick={() => {
-                  logout()
+                  logout();
                   navigation("/");
                 }}
                 sx={{ "&:hover": { bgcolor: "rgba(255,255,255,0.2)" } }}
@@ -137,9 +139,7 @@ const App = () => {
           path="/blogs/:id"
           element={
             <ErrorBoundary key="blogview">
-              <Blog
-                blog={blog}
-              />
+              <Blog blog={blog} />
             </ErrorBoundary>
           }
         />
@@ -155,9 +155,7 @@ const App = () => {
           path="/users/:id"
           element={
             <ErrorBoundary key="userview">
-              <User
-                user={user}
-              />
+              <User user={user} />
             </ErrorBoundary>
           }
         />
@@ -178,7 +176,7 @@ const App = () => {
           }
         />
       </Routes>
-    </Container >
+    </Container>
   );
 };
 
